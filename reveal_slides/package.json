@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@types/reveal.js": "^4.4.2"
+  }
+}

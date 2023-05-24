@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: streamlit-reveal-slides
+Version: 0.1.2
+Summary: reveal.js HTML presentations for streamlit
+Home-page: https://github.com/bouzidanas/streamlit.io/tree/master/streamlit-reveal-slides
+Author: Anas Bouzid
+Author-email: 
+Requires-Python: >=3.6
+Description-Content-Type: text/plain
+License-File: LICENSE
+
+create and add reveal.js HTML presentations to your streamlit app
