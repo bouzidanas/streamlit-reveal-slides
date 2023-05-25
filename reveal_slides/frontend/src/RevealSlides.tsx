@@ -117,46 +117,47 @@ const RevealSlides = ({ args, disabled }: RevealSlidesProps) => {
         Reveal.setState(initState);
       }
 
-      // Send slide position indecies back to Streamlit on initialization and on slide change
-      const currState = Reveal.getState();
-      Streamlit.setComponentValue(currState);
-      Reveal.on( 'slidechanged', event => {
+      if(!args['display_only']){
+        // Send slide position indecies back to Streamlit on initialization and on slide change
+        const currState = Reveal.getState();
+        Streamlit.setComponentValue(currState);
+        Reveal.on( 'slidechanged', event => {
 
-        const tempState = Reveal.getState();
-        Streamlit.setComponentValue({indexh: (event as any).indexh, indexv: (event as any).indexv, indexf: tempState.indexf, paused: tempState.paused, overview: tempState.overview});
-      });
-      
-      Reveal.on( 'fragmentshown', event => {
-        // event.fragment = the fragment DOM element
-        const tempState = Reveal.getState();
-        Streamlit.setComponentValue(tempState);
-      } );
-      Reveal.on( 'fragmenthidden', event => {
-        // event.fragment = the fragment DOM element
-        const tempState = Reveal.getState();
-        Streamlit.setComponentValue(tempState);
-      } );
-      Reveal.on( 'overviewshown', event => {
-        // event.overview = the overview DOM element
-        const tempState = Reveal.getState();
-        Streamlit.setComponentValue(tempState);
-      } );
-      Reveal.on( 'overviewhidden', event => {
-        // event.overview = the overview DOM element
-        const tempState = Reveal.getState();
-        Streamlit.setComponentValue(tempState);
-      } );
-      Reveal.on( 'paused', event => {
-        // event.fragment = the fragment DOM element
-        const tempState = Reveal.getState();
-        Streamlit.setComponentValue(tempState);
-      } );
-      Reveal.on( 'resumed', event => {
-        // event.fragment = the fragment DOM element
-        const tempState = Reveal.getState();
-        Streamlit.setComponentValue(tempState);
-      } );
-
+          const tempState = Reveal.getState();
+          Streamlit.setComponentValue({indexh: (event as any).indexh, indexv: (event as any).indexv, indexf: tempState.indexf, paused: tempState.paused, overview: tempState.overview});
+        });
+        
+        Reveal.on( 'fragmentshown', event => {
+          // event.fragment = the fragment DOM element
+          const tempState = Reveal.getState();
+          Streamlit.setComponentValue(tempState);
+        } );
+        Reveal.on( 'fragmenthidden', event => {
+          // event.fragment = the fragment DOM element
+          const tempState = Reveal.getState();
+          Streamlit.setComponentValue(tempState);
+        } );
+        Reveal.on( 'overviewshown', event => {
+          // event.overview = the overview DOM element
+          const tempState = Reveal.getState();
+          Streamlit.setComponentValue(tempState);
+        } );
+        Reveal.on( 'overviewhidden', event => {
+          // event.overview = the overview DOM element
+          const tempState = Reveal.getState();
+          Streamlit.setComponentValue(tempState);
+        } );
+        Reveal.on( 'paused', event => {
+          // event.fragment = the fragment DOM element
+          const tempState = Reveal.getState();
+          Streamlit.setComponentValue(tempState);
+        } );
+        Reveal.on( 'resumed', event => {
+          // event.fragment = the fragment DOM element
+          const tempState = Reveal.getState();
+          Streamlit.setComponentValue(tempState);
+        } );
+      }
     });
 
     return () => {
