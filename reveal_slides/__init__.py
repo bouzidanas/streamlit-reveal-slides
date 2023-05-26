@@ -77,7 +77,7 @@ def slides(content, height="auto", theme="black", config={}, markdown_props={}, 
 # Add some test code to play with the component while it's in development.
 # During development, we can run this just as we would any other Streamlit
 # app: `$ streamlit run slides/__init__.py`
-if _RELEASE:
+if not _RELEASE:
     import streamlit as st
 
     sample_html = r"""<section data-background-color="#78281F" ><h1>Reveal.js + Streamlit</h1></section>
