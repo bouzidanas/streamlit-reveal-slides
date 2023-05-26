@@ -77,7 +77,7 @@ def slides(content, height="auto", theme="black", config={}, markdown_props={}, 
 # Add some test code to play with the component while it's in development.
 # During development, we can run this just as we would any other Streamlit
 # app: `$ streamlit run slides/__init__.py`
-if not _RELEASE:
+if _RELEASE:
     import streamlit as st
 
     sample_html = r"""<section data-background-color="#78281F" ><h1>Reveal.js + Streamlit</h1></section>
@@ -175,13 +175,7 @@ The presentation can be configured using the `config` parameter. Its as simple a
     currState = slides(sample_markdown, 
                        height=height, 
                        theme=theme, 
-                       config={
-                               "width": content_width, 
-                               "height": content_height, 
-                               "minScale": scale_range[0], 
-                               "center": True, 
-                               "maxScale": scale_range[1], 
-                               "margin": margin, 
+                       config={ 
                                "plugins": plugins
                                }, 
                        initial_state={

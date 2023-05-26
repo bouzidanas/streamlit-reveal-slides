@@ -24,12 +24,32 @@ interface RevealSlidesProps extends ComponentProps {
   width: number
   disabled: boolean
   theme?: Theme
-}
+} 
 
 const includedPlugins = {"markdown": RevealMarkdown, "highlight": RevealHighlight, "katex": RevealMath.KaTeX, "mathjax2": RevealMath.MathJax2, "mathjax3": RevealMath.MathJax3, "search": RevealSearch, "notes": RevealNotes, "zoom": RevealZoom}
 // const simpleCommands = {"left": Reveal.left, "right": () => {Reveal.right()}, "up": Reveal.up, "down": Reveal.down, "prev": Reveal.prev, "next": Reveal.next, "prevFragment": Reveal.prevFragment, "nextFragment": Reveal.nextFragment, "togglePause": Reveal.togglePause, "toggleAutoSlide": Reveal.toggleAutoSlide, "toggleHelp": Reveal.toggleHelp, "toggleOverview": Reveal.toggleOverview, "shuffle": Reveal.shuffle}
 // const commandsWithArgs = {slide: Reveal.slide, togglePause: Reveal.togglePause, toggleAutoSlide: Reveal.toggleAutoSlide, toggleHelp: Reveal.toggleHelp, toggleOverview: Reveal.toggleOverview}
 
+const defaultConfig = {
+  // The "normal" size of the presentation, aspect ratio will be preserved
+	// when the presentation is scaled to fit different resolutions
+	width: 900,
+	height: 860,
+	
+	// Factor of the display size that should remain empty around the content
+	margin: 0.05,
+
+	// Bounds for smallest/largest possible scale to apply to content
+	minScale: 0.1,
+	maxScale: 3.0,
+
+	// Help the user learn the controls by providing hints, for example by
+	// bouncing the down arrow when they first encounter a vertical slide
+	controlsTutorial: true,
+
+	// Determines where controls appear, "edges" or "bottom-right"
+	controlsLayout: 'edges',
+}
 
 /**
  * This is a React-based component template. The `render()` function is called
@@ -42,7 +62,7 @@ const RevealSlides = ({ args, disabled }: RevealSlidesProps) => {
   // const commandStr = JSON.stringify(args["commands"])
 
   const setupConfig = (configString: string) : object => {
-    const config = JSON.parse(configStr)
+    const config = {...defaultConfig,...JSON.parse(configStr)}
     // code to run after render goes here
     if (args["allow_unsafe_html"]) {
       // do nothing
