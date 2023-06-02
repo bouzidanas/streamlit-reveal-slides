@@ -62,7 +62,7 @@ const RevealSlides = ({ args, disabled }: RevealSlidesProps) => {
   // const commandStr = JSON.stringify(args["commands"])
 
   const setupConfig = (configString: string) : object => {
-    const config = {...defaultConfig,...JSON.parse(configStr)}
+    const config = {...defaultConfig, ...JSON.parse(configStr)}
     // code to run after render goes here
     if (args["allow_unsafe_html"]) {
       // do nothing
