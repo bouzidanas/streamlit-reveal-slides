@@ -5,6 +5,7 @@ import {
   Theme,
 } from "streamlit-component-lib"
 import { useEffect, useMemo } from "react"
+import { createGlobalStyle } from "styled-components/macro"
 
 
 import Reveal from 'reveal.js';
@@ -24,11 +25,15 @@ interface RevealSlidesProps extends ComponentProps {
   width: number
   disabled: boolean
   theme?: Theme
-} 
+}
 
 const includedPlugins = {"markdown": RevealMarkdown, "highlight": RevealHighlight, "katex": RevealMath.KaTeX, "mathjax2": RevealMath.MathJax2, "mathjax3": RevealMath.MathJax3, "search": RevealSearch, "notes": RevealNotes, "zoom": RevealZoom}
 // const simpleCommands = {"left": Reveal.left, "right": () => {Reveal.right()}, "up": Reveal.up, "down": Reveal.down, "prev": Reveal.prev, "next": Reveal.next, "prevFragment": Reveal.prevFragment, "nextFragment": Reveal.nextFragment, "togglePause": Reveal.togglePause, "toggleAutoSlide": Reveal.toggleAutoSlide, "toggleHelp": Reveal.toggleHelp, "toggleOverview": Reveal.toggleOverview, "shuffle": Reveal.shuffle}
 // const commandsWithArgs = {slide: Reveal.slide, togglePause: Reveal.togglePause, toggleAutoSlide: Reveal.toggleAutoSlide, toggleHelp: Reveal.toggleHelp, toggleOverview: Reveal.toggleOverview}
+
+const GlobalCSS = createGlobalStyle<{ inject: string}>`
+  ${props => props.inject}
+`
 
 const defaultConfig = {
   // The "normal" size of the presentation, aspect ratio will be preserved
@@ -95,19 +100,18 @@ const RevealSlides = ({ args, disabled }: RevealSlidesProps) => {
 
     // To do: remove or disable previously imported css. When the list of
     // css imports exceed about 25, the page no longer updates.
-    import('../node_modules/reveal.js/dist/theme/' + args.theme + '.css')
+    import('../node_modules/reveal.js/dist/theme/' + args.theme + '.css').then((css) => {
 
-    // To do: figure out a way to get a callback after new css is applied
-    // The following code is a hack to get around the fact that the new css
-    // is not applied immediately
-    setTimeout(() => {
       try{
         Reveal.layout();
       }
       catch (e){
         console.warn("Reveal.layout() call failed.")
       }
-    }, 100);
+    
+    }).catch((err) => {
+      console.warn("Failed CSS import: ", err);
+    });
 
   }, [args.theme]);
 
@@ -305,19 +309,25 @@ const RevealSlides = ({ args, disabled }: RevealSlidesProps) => {
 
   if (args["allow_unsafe_html"]) {
     return (
-      <div ref={observe} className="slides" dangerouslySetInnerHTML={{__html: args["content"]}}>
-      </div>
+      <>
+        <GlobalCSS inject={args.css}/>
+        <div ref={observe} className="slides" dangerouslySetInnerHTML={{__html: args["content"]}}>
+        </div>
+      </>
     )
   }
   else {
     return (
-      <div ref={observe} className="slides">
-        <section data-markdown={""} {...args["markdown_props"]}>
-          <script type={"text/template"}>
-          {args["content"]}
-          </script>
-        </section>
-      </div>
+      <>
+        <GlobalCSS inject={args.css}/>
+        <div ref={observe} className="slides">
+          <section data-markdown={""} {...args["markdown_props"]}>
+            <script type={"text/template"}>
+              {args["content"]}
+            </script>
+          </section>
+        </div>
+      </>
     )
   }
 }

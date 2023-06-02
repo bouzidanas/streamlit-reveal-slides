@@ -5,7 +5,7 @@ import streamlit.components.v1 as components
 # the component, and True when we're ready to package and distribute it.
 # (This is, of course, optional - there are innumerable ways to manage your
 # release process.)
-_RELEASE = True
+_RELEASE = False
 
 # Declare a Streamlit component. `declare_component` returns a function
 # that is used to create instances of the component. We're naming this
@@ -41,7 +41,7 @@ else:
 # `declare_component` and call it done. The wrapper allows us to customize
 # our component's API: we can pre-process its input args, post-process its
 # output value, and add a docstring for users.
-def slides(content, height="auto", theme="black", config={}, markdown_props={}, initial_state={}, allow_unsafe_html=False, display_only=False, key=None):
+def slides(content, height="auto", theme="black", css="", config={}, markdown_props={}, initial_state={}, allow_unsafe_html=False, display_only=False, key=None):
     """Create a new instance of "slides".
 
     Parameters
@@ -68,7 +68,7 @@ def slides(content, height="auto", theme="black", config={}, markdown_props={}, 
     #
     # "default" is a special argument that specifies the initial return
     # value of the component before the user has interacted with it.
-    component_value = _component_func(content=content, height=height, theme=theme, config=config, markdown_props=markdown_props, initial_state=initial_state, allow_unsafe_html=allow_unsafe_html, display_only=display_only, key=key, default={ "indexh": -1, "indexv": -1, "indexf": -1, "paused": False, "overview": False})
+    component_value = _component_func(content=content, height=height, theme=theme, css=css, config=config, markdown_props=markdown_props, initial_state=initial_state, allow_unsafe_html=allow_unsafe_html, display_only=display_only, key=key, default={ "indexh": -1, "indexv": -1, "indexf": -1, "paused": False, "overview": False})
 
     # We could modify the value returned from the component if we wanted.
     # There's no need to do this in our simple example - but it's an option.
@@ -175,7 +175,13 @@ The presentation can be configured using the `config` parameter. Its as simple a
     currState = slides(sample_markdown, 
                        height=height, 
                        theme=theme, 
-                       config={ 
+                       config={
+                               "width": content_width, 
+                               "height": content_height, 
+                               "minScale": scale_range[0], 
+                               "center": True, 
+                               "maxScale": scale_range[1], 
+                               "margin": margin, 
                                "plugins": plugins
                                }, 
                        initial_state={
@@ -185,8 +191,10 @@ The presentation can be configured using the `config` parameter. Its as simple a
                                       "paused": paused, 
                                       "overview": overview 
                                       }, 
-                       markdown_props={"data-separator-vertical":"^--$"}, display_only=True,
-                       key="foo")
+                       markdown_props={"data-separator-vertical":"^--$"}, 
+                       css=r"body.reveal-viewport {background-color: blue;}",
+                       display_only=True,
+                       key="reveal_slides")
 
     if currState["indexh"] == 0:
         st.markdown("Reveal.js is an open source HTML presentation framework. It enables anyone with a web browser to create fully-featured and beautiful presentations for free. \n\nThe framework comes with a broad range of features including nested slides, Markdown support, Auto-Animate, PDF export, speaker notes, LaTeX support and syntax highlighted code.")
