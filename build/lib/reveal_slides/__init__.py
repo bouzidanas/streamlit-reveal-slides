@@ -80,8 +80,32 @@ def slides(content, height="auto", theme="black", css="", config={}, markdown_pr
 if not _RELEASE:
     import streamlit as st
 
-    sample_html = r"""<section data-background-color="#78281F" ><h1>Reveal.js + Streamlit</h1></section>
-<section>Slide 2</section>"""
+    sample_html = r"""<section data-markdown="" data-separator-vertical="^--$" >
+<script type="text/template">
+## [Welcome to AI Jeopardy!](#/1)
+</script>
+</section>
+<script type="application/javascript">
+    function findLink(el) {
+        if (el.tagName == 'A' && el.href) {
+            return el.href;
+        } else if (el.parentElement) {
+            return findLink(el.parentElement);
+        } else {
+            return null;
+        }
+    };
+
+    function callback(e) {
+        console.log("Click detected!");
+        const link = findLink(e.target);
+        if (link == null) { return; }
+        e.preventDefault();
+        console.log("Link clicked!", link);
+    };
+    console.log("Adding click listener");
+    document.addEventListener('click', callback, false);
+</script>"""
     
     # Note that even though we put markdown in a raw string, we still need to escape the backslashes
     # This is why we use 4 backslashes to get 2 backslashes in the latex math code
@@ -170,8 +194,25 @@ The presentation can be configured using the `config` parameter. Its as simple a
         fragPos = st.number_input("Fragment Position", value=-1)
         overview = st.checkbox("Show Overview", value=False)
         paused = st.checkbox("Pause", value=False)
-
-    # Add the streamlit-reveal-slide component to the Streamlit app.                    
+    
+    ## Add the streamlit-reveal-slide component to the Streamlit app.
+                    
+    ## Html markup example
+    # currState = slides(sample_html, 
+    #                    height=height, 
+    #                    theme=theme,                    
+    #                    config={
+    #                         "width": content_width, 
+    #                         "height": content_height, 
+    #                         "minScale": scale_range[0], 
+    #                         "center": True, 
+    #                         "maxScale": scale_range[1], 
+    #                         "margin": margin, 
+    #                         "plugins": ["markdown"]
+    #                         }, allow_unsafe_html=True,
+    #                         key="reveal")
+      
+    ## Markdown example
     currState = slides(sample_markdown, 
                        height=height, 
                        theme=theme, 
@@ -215,9 +256,9 @@ The presentation can be configured using the `config` parameter. Its as simple a
         sample_markdown = '''## Slide 1
 A paragraph with some text and a [link](https://hakim.se).
 ---
-## Slide 2
+Slide 2
 ---
-## Slide 3'''
+Slide 3'''
         st.code(sample_markdown, language="md")
         st.markdown('''The second way is by providing a string containing the markup that goes inside the `<div class="slides">` element and setting the `slide` function's `allow_unsafe_html` argument to `True`. The latter is what tells the component to expect markup instead of markdown.''')
         sample_html = '''<div class="reveal">

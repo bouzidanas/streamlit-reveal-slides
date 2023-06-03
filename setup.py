@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="streamlit-reveal-slides",
-    version="0.1.8",
+    version="0.1.9",
     author="Anas Bouzid",
     author_email="",
     description="reveal.js HTML presentations for streamlit",
