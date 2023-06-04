@@ -4,9 +4,8 @@ import {
   withStreamlitConnection,
   Theme,
 } from "streamlit-component-lib"
-import { useEffect, useMemo, useRef } from "react"
+import { MutableRefObject, useEffect, useMemo, useRef } from "react"
 import { createGlobalStyle } from "styled-components/macro"
-import InnerHTML from 'dangerously-set-html-content'
 
 import Reveal from 'reveal.js';
 import RevealMarkdown from 'reveal.js/plugin/markdown/markdown';
@@ -25,6 +24,11 @@ interface RevealSlidesProps extends ComponentProps {
   width: number
   disabled: boolean
   theme?: Theme
+}
+
+interface DangerousDivProps extends React.HTMLAttributes<HTMLDivElement> {
+  html: string;
+  innerRef: React.Ref<HTMLDivElement>;
 }
 
 const GlobalCSS = createGlobalStyle<{ inject: string}>`
@@ -54,6 +58,42 @@ const defaultConfig = {
 
 	// Determines where controls appear, "edges" or "bottom-right"
 	controlsLayout: 'edges',
+}
+
+// This new component allows us to set the innerHTML of a div in a way 
+// that allows code to be executed. THIS IS NOT SAFE. This is a workaround
+// for something that isnt allowed for a reason. The user of the `reveal_slides`
+// component is responsable for ensuring that the html (and js) they pass in is safe.
+const DangerousDiv = ({html, innerRef, ...rest}: DangerousDivProps) => {
+
+  const divRef = useRef<HTMLDivElement>(null);
+
+  useEffect(function () {
+    if (!html) return;
+
+    const newInnerHtml = document.createRange().createContextualFragment(html); // Create a 'tiny' document and parse the html string
+    console.log(divRef);
+    divRef.current!.innerHTML = ''; // Clear the container
+    divRef.current!.appendChild(newInnerHtml); // Append the new content
+  }, [html]);
+
+  return (
+    <div 
+      ref={(element) => {
+        // This function passes the ref to the this div wrapper component
+        // AND passes it to the innerRef prop which is used by the parent
+        // of the wrapper component. This special handling allows for innerRef 
+        // to be a function or a ref object.
+        (divRef as MutableRefObject<HTMLDivElement>).current = element as HTMLDivElement
+        if (typeof innerRef === 'function') {
+          innerRef(element)
+        }
+        else {
+          (innerRef as MutableRefObject<HTMLDivElement>).current = element as HTMLDivElement
+        }
+      }} 
+      {...rest} />
+  )
 }
 
 /**
@@ -291,9 +331,7 @@ const RevealSlides = ({ args, disabled }: RevealSlidesProps) => {
     return (
       <>
         <GlobalCSS inject={args.css}/>
-        <div ref={observe} className="slides" >
-          <InnerHTML html={args["content"]} />
-        </div>
+        <DangerousDiv innerRef={observe} className="slides" html={args["content"]} />
       </>
     )
   }
