@@ -116,7 +116,7 @@ elif currState["indexh"] == 2:
     if currState["indexf"] == 0:
         st.markdown("_(see later slides for details and examples)_")
     elif currState["indexf"] == 1:
-        st.markdown("- You can swipe horizontally or vertically to navigate through a presentation on any touch-enabled device. \n- You can use the arrow keys on your keyboard to navigate as well. \n- Navigating with the mouse is as simple as clicking the directional arrows near the edges or corners of the slides.")
+        st.markdown("- You can swipe horizontally or vertically to navigate through a presentation on any touch-enabled device. \n- You can use the `space` or arrow keys on your keyboard to navigate as well. Press `Shift` + `/` to see all keyboard shortcuts. \n- Navigating with the mouse is as simple as clicking the directional arrows near the edges or corners of the slides.")
     elif currState["indexf"] == 2:
         st.markdown("- Press the `F` key on your keyboard to enter full-screen presentation mode. Press `ESC` to exit full-screen mode. \n- Press the `O` of `ESC` key to enter and exit overview mode")
     elif currState["indexf"] == 3:

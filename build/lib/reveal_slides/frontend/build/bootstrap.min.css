@@ -315,7 +315,7 @@ template {
   display: none;
 }
 [hidden] {
-  display: none !important;
+  display: inherit !important;
 }
 .h1,
 .h2,

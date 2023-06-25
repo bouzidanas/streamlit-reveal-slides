@@ -80,9 +80,13 @@ def slides(content, height="auto", theme="black", css="", config={}, markdown_pr
 if not _RELEASE:
     import streamlit as st
 
-    sample_html = r"""<section data-markdown="" data-separator-vertical="^--$" >
+    sample_html = r"""<section data-markdown="" data-separator-vertical="^--$"  data-separator-notes="^Note:$" >
 <script type="text/template">
 ## [Welcome to AI Jeopardy!](#/1)
+
+Note:
+This is a note.
+
 </script>
 </section>
 <script type="application/javascript">
@@ -125,57 +129,7 @@ Add <a target="_blank" href="https://revealjs.com/">Reveal.js</a> presentations 
 - Search and Zoom (plugins) <!-- .element: class="fragment" data-fragment-index="3" -->
 - Display LaTeX and syntax highlighted code (plugins) <!-- .element: class="fragment" data-fragment-index="4" -->
 ---
-## Slide Content Creation
-A paragraph with some text and a markdown [link](https://hakim.se). 
-Markdown links get displayed within the parent iframe.
---
-Another paragraph containing the same <a target="_blank" href="https://hakim.se">link</a>.
-However, this link will open in a new tab instead. 
-This is done using an HTML `<a>` tag with `target="_blank"`.
----
-## Backgrounds
-Reveal supports four different types of backgrounds: color, image, video and iframe.
---
-<!-- .slide: data-background-color="#283747" -->
-Change the background to a solid color using the `data-background-color` attribute.
---
-<!-- .slide: data-background-video="https://bouzidanas.github.io/videos/pexels-cottonbro-9665235.mp4" data-background-video-loop data-background-video-muted -->
-Add a video as the background using the `data-background-video` attribute. Add `data-background-video-loop` to loop the video in the background and add `data-background-video-muted` to mute it.
----
-## Math Expressions
-This following is an example of an inline math equation: $e^{i\pi} + 1 = 0$.
---
-## The Lorenz Equations
 
-$$
-\begin{aligned}
-\dot{x} & = \sigma(y-x) \\\\
-\dot{y} & = \rho x - y - xz \\\\
-\dot{z} & = -\beta z + xy
-\end{aligned}
-$$
----
-## Code blocks
-```js [1-2|3|4]
-let a = 1;
-let b = 2;
-let c = x => 1 + 2 + x;
-c(3);
-```
----
-## Slide Fragments
-This sentence is placed in a fragment with `data-fragment-index="0"` 
-<!-- .element: class="fragment" data-fragment-index="0" -->
-
-This is the third fragment in the slide that will appear because `data-fragment-index` is set to `1` 
-<!-- .element: class="fragment" data-fragment-index="1" -->
-
-This sentence appears by default when you transition into and out of this slide 
----
-## Configuring the Presentation
-The presentation can be configured using the `config` parameter. Its as simple as passing a dictionary with the reveal configuration options.
----
-## La fin
 """
     st.markdown("## STREAMLIT REVEAL.JS COMPONENT")
     with st.sidebar:
@@ -198,44 +152,59 @@ The presentation can be configured using the `config` parameter. Its as simple a
     ## Add the streamlit-reveal-slide component to the Streamlit app.
                     
     ## Html markup example
-    currState = slides(sample_html, 
-                       height=height, 
-                       theme=theme,                    
-                       config={
-                            "width": content_width, 
-                            "height": content_height, 
-                            "minScale": scale_range[0], 
-                            "center": True, 
-                            "maxScale": scale_range[1], 
-                            "margin": margin, 
-                            "plugins": ["markdown"]
-                            }, allow_unsafe_html=True,
-                            key="reveal")
+    # currState = slides(sample_html, 
+    #                    height=height, 
+    #                    theme=theme,                    
+    #                    config={
+    #                         "width": content_width, 
+    #                         "height": content_height, 
+    #                         "minScale": scale_range[0], 
+    #                         "center": True, 
+    #                         "maxScale": scale_range[1], 
+    #                         "margin": margin, 
+    #                         "plugins": ["markdown", "notes"],
+    #                         "dependencies": [{ 
+    #                                           "src": 'plugin/symbol-per-slide-progress/symbol-per-slide-progress.js', 
+    #                                           "async": True 
+    #                                          }],
+    #                         "symbolperslideprogress": {
+    #                                                    "position": "left",
+    #                                                    "align": "horizontal",
+    #                                                    "symbolColor": "",
+    #                                                    "symbolActiveColor": "",
+    #                                                   }
+    #                         }, allow_unsafe_html=True,
+    #                         key="reveal")
       
     ## Markdown example
-    # currState = slides(sample_markdown, 
-                    #    height=height, 
-                    #    theme=theme, 
-                    #    config={
-                            #    "width": content_width, 
-                            #    "height": content_height, 
-                            #    "minScale": scale_range[0], 
-                            #    "center": True, 
-                            #    "maxScale": scale_range[1], 
-                            #    "margin": margin, 
-                            #    "plugins": plugins
-                            #    }, 
-                    #    initial_state={
-                                    #   "indexh": hslidePos, 
-                                    #   "indexv": vslidePos, 
-                                    #   "indexf": fragPos, 
-                                    #   "paused": paused, 
-                                    #   "overview": overview 
-                                    #   }, 
-                    #    markdown_props={"data-separator-vertical":"^--$"}, 
-                    #    css=r"body.reveal-viewport {background-color: blue;}",
-                    #    display_only=True,
-                    # #    key="reveal_slides")
+    currState = slides(sample_markdown, 
+                       height=height, 
+                       theme=theme, 
+                       config={
+                               "transition": "concave",
+                               "width": content_width, 
+                               "height": content_height, 
+                               "minScale": scale_range[0], 
+                               "center": True, 
+                               "maxScale": scale_range[1], 
+                               "margin": margin, 
+                               "plugins": plugins,
+                               "externalPlugins": ["symbolperslideprogress"],
+                               "symbolperslideprogress": {
+                                                          "position": "center",
+                                                          "align": "horizontal",
+                                                         }
+                               }, 
+                       initial_state={
+                                      "indexh": hslidePos, 
+                                      "indexv": vslidePos, 
+                                      "indexf": fragPos, 
+                                      "paused": paused, 
+                                      "overview": overview 
+                                      }, 
+                       markdown_props={"data-separator-vertical":"^--$"}, 
+                       display_only=True,
+                       key="reveal_slides")
 
     # if currState["indexh"] == 0:
         # st.markdown("Reveal.js is an open source HTML presentation framework. It enables anyone with a web browser to create fully-featured and beautiful presentations for free. \n\nThe framework comes with a broad range of features including nested slides, Markdown support, Auto-Animate, PDF export, speaker notes, LaTeX support and syntax highlighted code.")
