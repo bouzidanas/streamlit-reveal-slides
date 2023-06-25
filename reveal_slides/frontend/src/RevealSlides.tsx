@@ -4,7 +4,7 @@ import {
   withStreamlitConnection,
   Theme,
 } from "streamlit-component-lib"
-import { MutableRefObject, useEffect, useMemo, useRef } from "react"
+import { MutableRefObject, useEffect, useMemo, useRef, lazy} from "react"
 import { createGlobalStyle } from "styled-components/macro"
 
 import Reveal from 'reveal.js';
@@ -14,7 +14,6 @@ import RevealMath from 'reveal.js/plugin/math/math';
 import RevealSearch from 'reveal.js/plugin/search/search';
 import RevealNotes from 'reveal.js/plugin/notes/notes';
 import RevealZoom from 'reveal.js/plugin/zoom/zoom';
-
 
 import 'reveal.js/dist/reveal.css';
 import 'reveal.js/plugin/highlight/monokai.css';
@@ -30,6 +29,15 @@ interface DangerousDivProps extends React.HTMLAttributes<HTMLDivElement> {
   html: string;
   innerRef: React.Ref<HTMLDivElement>;
 }
+
+type SymbolPerSlideProgressType = {
+  id: string, 
+  init: Function, 
+  updateColors: Function, 
+  updateNavigation: Function 
+}
+
+let RevealSymbolPerSlideProgress: SymbolPerSlideProgressType
 
 const GlobalCSS = createGlobalStyle<{ inject: string}>`
   ${props => props.inject}
@@ -72,7 +80,6 @@ const DangerousDiv = ({html, innerRef, ...rest}: DangerousDivProps) => {
     if (!html) return;
 
     const newInnerHtml = document.createRange().createContextualFragment(html); // Create a 'tiny' document and parse the html string
-    console.log(divRef);
     divRef.current!.innerHTML = ''; // Clear the container
     divRef.current!.appendChild(newInnerHtml); // Append the new content
   }, [html]);
@@ -96,16 +103,17 @@ const DangerousDiv = ({html, innerRef, ...rest}: DangerousDivProps) => {
   )
 }
 
-/**
- * This is a React-based component template. The `render()` function is called
- * automatically when your component should be re-rendered.
- */
+// RevealSlides is the main component.
 const RevealSlides = ({ args, disabled }: RevealSlidesProps) => {   
 
   let configStr = JSON.stringify(args["config"])
   let initStateStr = JSON.stringify(args["initial_state"])
   // const commandStr = JSON.stringify(args["commands"])
 
+  // This function takes the config object passed in from Streamlit and
+  // adjusts it to work with the reveal.js api. The appropriate plugin module
+  // is substituted in for each plugin name found in the 'plugins' attribute.
+  // Markdown plugin is always included regardless if it is in the config object or not.
   const setupConfig = (configString: string) : object => {
     const config = {...defaultConfig, ...JSON.parse(configStr)}
     // code to run after render goes here
@@ -125,7 +133,7 @@ const RevealSlides = ({ args, disabled }: RevealSlidesProps) => {
     }
     else {
       if ('plugins' in config){
-        var arr = config['plugins'];
+        arr = config['plugins'];
         arr.forEach(function(moduleName: string, index: number) {
           if (moduleName in includedPlugins){
             arr[index] = (includedPlugins as any)[moduleName];
@@ -146,24 +154,41 @@ const RevealSlides = ({ args, disabled }: RevealSlidesProps) => {
     return config;
   }
 
+  // This function handles `theme` changes. It imports the appropriate css file 
+  // according to the theme name passed in from Streamlit.
   useMemo(()=>{
-    // code to run on component mount goes here
-
     // To do: remove or disable previously imported css. When the list of
     // css imports exceed about 25, the page no longer updates.
+    // NOTE: According to the webpack.config.js file found in the react-scripts node_module, 
+    // the style-loader is used in development mode and MiniCssExtractPlugin.loader is used in
+    // production mode. This means that the css is injected into the page (by adding `<style>` 
+    // elements to header) in development mode and is extracted into a separate file 
+    // (and adding link elements to header with href pointing to files) in production mode.
+    // It may be possible to alter settings/options to force these loaders to replace the css 
+    // added for previous themes with the css for the current.
     import('../node_modules/reveal.js/dist/theme/' + args.theme + '.css').then((css) => {
       try{
         Reveal.layout();
+
+        // Force the symbol-per-slide-progress plugin to update its colors if the plugin is loaded
+        if( RevealSymbolPerSlideProgress && "externalPlugins" in (Reveal.getConfig() as any) && ((Reveal.getConfig() as any).externalPlugins as string[]).includes("symbolperslideprogress")){ 
+          RevealSymbolPerSlideProgress.updateColors((Reveal.getConfig() as any).symbolperslideprogress || {});
+          RevealSymbolPerSlideProgress.updateNavigation()
+        }
       }
       catch (e){
         console.warn("Reveal.layout() call failed.")
       }
+
+      // const tempList = Array.from(document.head.childNodes)
+      // console.log(([] as ChildNode[]).concat(tempList))
     }).catch((err) => {
       console.warn("Failed CSS import: ", err);
     });
 
   }, [args.theme]);
 
+  // Initialize reveal.js
   useEffect(() => {
     const config = setupConfig(configStr)
     
@@ -188,6 +213,13 @@ const RevealSlides = ({ args, disabled }: RevealSlidesProps) => {
       const initState = JSON.parse(initStateStr);
       if(Object.keys(initState).length !== 0){
         Reveal.setState(initState);
+      }
+
+      if("externalPlugins" in (Reveal.getConfig() as any) && ((Reveal.getConfig() as any).externalPlugins as string[]).includes("symbolperslideprogress")){
+        import('reveal.js-symbol-per-slide-progress').then((plugin) => {
+          RevealSymbolPerSlideProgress = plugin.default
+          RevealSymbolPerSlideProgress.init(Reveal);
+        });        
       }
 
       if(!args['display_only']){
@@ -269,6 +301,8 @@ const RevealSlides = ({ args, disabled }: RevealSlidesProps) => {
     Reveal.configure(config);
   }, [configStr, args["allow_unsafe_html"]]);
 
+  // When reveal.js is ready (after initialization or reconfiguration), 
+  // set the initial state if it is passed in from Streamlit.
   useEffect(() => {
     const initState = JSON.parse(initStateStr);
     if (Reveal.isReady() && Object.keys(initState).length !== 0){
@@ -276,6 +310,7 @@ const RevealSlides = ({ args, disabled }: RevealSlidesProps) => {
     }
   }, [initStateStr]);
 
+  // Disable reveal.js if disabled is true
   useEffect(() => {
     if (Reveal.isReady()){
       if (disabled){
@@ -296,9 +331,7 @@ const RevealSlides = ({ args, disabled }: RevealSlidesProps) => {
   }, [disabled]);
 
   //To do: add support for commands (i.e. control slides from Streamlit)
-  //-----------------
-  //
-
+  //--------------------------------------------------------------------
 
   /**
    * resizeObserver observes changes in elements its given to observe and is used here

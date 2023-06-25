@@ -1,0 +1,40 @@
+.reveal .navigation {
+  position: absolute;
+  bottom: 12px;
+}
+
+.reveal .navigation.left {
+  left: 12px;
+}
+
+.reveal .navigation.right {
+  right: 12px;
+}
+
+.reveal .navigation.center {
+  left: 0;
+  right: 0;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.reveal .navigation.center .navigation-list {
+  padding-left: 10px;
+  margin: 0;
+}
+
+.reveal .navigation-list-element.horizontal-left {
+  float: left;
+  margin-right: 42px;
+}
+
+.reveal .navigation-list-element.horizontal-right {
+  float: left;
+  margin-left: 42px;
+}
+
+.reveal .navigation-list-element.horizontal-center {
+  float: left;
+  margin-left: 42px;
+}

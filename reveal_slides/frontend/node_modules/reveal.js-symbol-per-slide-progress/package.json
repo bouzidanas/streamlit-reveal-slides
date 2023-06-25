@@ -1,0 +1,26 @@
+{
+  "name": "reveal.js-symbol-per-slide-progress",
+  "version": "1.0.0",
+  "description": "An alternative progress plugin for reveal.js to show every slide as single symbol and the symbol of the current active slide in a different color",
+  "main": "symbol-per-slide-progress.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/naamor/reveal.js-symbol-per-slide-progress.git"
+  },
+  "keywords": [
+    "reveal-js",
+    "revealjs",
+    "reveal",
+    "reveal-plugin",
+    "reveal-js-plugin"
+  ],
+  "author": "Roman Stocker",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/naamor/reveal.js-symbol-per-slide-progress/issues"
+  },
+  "homepage": "https://github.com/naamor/reveal.js-symbol-per-slide-progress#readme"
+}
